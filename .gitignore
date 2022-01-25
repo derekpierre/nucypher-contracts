@@ -3,8 +3,17 @@ __pycache__
 .history
 .hypothesis/
 .tox/
-build/
 reports/
+build/
 venv/
 .python-version
 bin/
+node_modules
+.env
+coverage
+coverage.json
+typechain
+
+#Hardhat files
+cache
+artifacts

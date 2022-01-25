@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 
-import "../zeppelin/token/ERC20/SafeERC20.sol";
-import "../zeppelin/math/SafeMath.sol";
-import "../zeppelin/math/Math.sol";
-import "../zeppelin/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./lib/AdditionalMath.sol";
 import "./lib/SignatureVerifier.sol";
 import "./NuCypherToken.sol";

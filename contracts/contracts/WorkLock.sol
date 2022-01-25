@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0; // TODO use 0.7.x version and revert changes ?
 
 
-import "../zeppelin/math/SafeMath.sol";
-import "../zeppelin/token/ERC20/SafeERC20.sol";
-import "../zeppelin/utils/Address.sol";
-import "../zeppelin/ownership/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./NuCypherToken.sol";
 import "./IStakingEscrow.sol";
 import "./lib/AdditionalMath.sol";

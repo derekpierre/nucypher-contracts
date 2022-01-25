@@ -3,8 +3,7 @@
 pragma solidity ^0.8.0;
 
 
-import "../zeppelin/token/ERC20/ERC20.sol";
-import "../zeppelin/token/ERC20/ERC20Detailed.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
 /**
@@ -12,7 +11,7 @@ import "../zeppelin/token/ERC20/ERC20Detailed.sol";
 * @notice ERC20 token
 * @dev Optional approveAndCall() functionality to notify a contract if an approve() has occurred.
 */
-contract NuCypherToken is ERC20, ERC20Detailed('NuCypher', 'NU', 18) {
+contract NuCypherToken is ERC20('NuCypher', 'NU') {
 
     /**
     * @notice Set amount of tokens

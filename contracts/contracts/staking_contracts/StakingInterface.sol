@@ -8,7 +8,7 @@ import "../NuCypherToken.sol";
 import "../IStakingEscrow.sol";
 import "../PolicyManager.sol";
 import "../WorkLock.sol";
-import "../../threshold/IStaking.sol";
+import "@threshold-network/solidity-contracts/contracts/staking/IStaking.sol";
 
 
 /**

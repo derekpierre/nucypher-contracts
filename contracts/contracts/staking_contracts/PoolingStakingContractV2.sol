@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../../zeppelin/ownership/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../staking_contracts/AbstractStakingContract.sol";
 
 /**
@@ -64,7 +64,7 @@ contract PoolingStakingContractV2 is InitializableStakingContract, Ownable {
     ) external initializer {
         require(_workerOwner != address(0) && _workerFraction <= BASIS_FRACTION);
         InitializableStakingContract.initialize(_router);
-        _transferOwnership(msg.sender);
+        transferOwnership(msg.sender);
         escrow = _router.target().escrow();
         workerFraction = _workerFraction;
         workerOwner = _workerOwner;
