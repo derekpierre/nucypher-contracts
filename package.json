@@ -1,0 +1,8 @@
+{
+  "name": "@nucypher/nucypher-contracts",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@github.com:manumonti/nucypher-contracts.git",
+  "author": "Manuel Montenegro <manumonti@gmail.com>",
+  "license": "MIT"
+}
