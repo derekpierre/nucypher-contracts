@@ -17,6 +17,15 @@ def is_variable(param: Any):
     return isinstance(param, str) and param.startswith(VARIABLE_PREFIX)
 
 
+def resolve_variable(value: Any, context: typing.Dict[str, Any]) -> Any:
+    if not is_variable(value):
+        return value
+
+    variable = value.strip(VARIABLE_PREFIX)
+    contract_instance = context[variable]
+    return contract_instance.address
+
+
 def _validate_param(param: Any, contracts: List[str]):
     if not is_variable(param):
         return
@@ -38,19 +47,12 @@ def validate_deployment_config(config: typing.OrderedDict[str, Any]):
                 _validate_param(value, available_contracts)
 
 
-class ConstructorParams:
+class DeploymentConfig:
     def __init__(self, constructor_values: OrderedDict):
+        validate_deployment_config(constructor_values)
         self.params = constructor_values
 
-    def _resolve(self, value: Any, context: typing.Dict[str, Any]) -> Any:
-        if not is_variable(value):
-            return value
-
-        variable = value.strip(VARIABLE_PREFIX)
-        contract_instance = context[variable]
-        return contract_instance.address
-
-    def get_params(
+    def get_constructor_params(
         self, container: ContractContainer, context: typing.Dict[str, Any], interactive: bool = True
     ) -> List[Any]:
         contract_name = container.contract_type.name
@@ -60,10 +62,10 @@ class ConstructorParams:
             if isinstance(value, list):
                 param_value_list = []
                 for item in value:
-                    param_value_list.append(self._resolve(item, context))
+                    param_value_list.append(resolve_variable(item, context))
                 resolved_params[name] = param_value_list
             else:
-                resolved_params[name] = self._resolve(value, context)
+                resolved_params[name] = resolve_variable(value, context)
 
         if interactive:
             print(f"Resolved constructor parameters for {contract_name}")
@@ -77,7 +79,7 @@ class ConstructorParams:
         return list(resolved_params.values())
 
     @classmethod
-    def from_file(cls, config_filepath: Path) -> "ConstructorParams":
+    def from_file(cls, config_filepath: Path) -> "DeploymentConfig":
         with open(config_filepath, "r") as config_file:
             config = OrderedDict(json.load(config_file))
 

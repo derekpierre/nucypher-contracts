@@ -2,18 +2,17 @@
 import os
 from pathlib import Path
 
-import utils
 from ape import project
 from ape.cli import get_user_selected_account
-from utils.registry import registry_from_ape_deployments
-from web3 import Web3
+from scripts.deployment import DeploymentConfig
+from scripts.registry import registry_from_ape_deployments
 
 PUBLISH = False
 
 # TODO cleanup; uniqueness, existence etc.
-DEPLOYMENT_REGISTRY_FILEPATH = (
-    Path(utils.__file__).parent / "artifacts" / "lynx_testnet_registry.json"
-)
+DEPLOYMENT_REGISTRY_FILEPATH = Path(".").parent / "artifacts" / "lynx_testnet_registry.json"
+
+CONFIG_FILE = Path(__file__).parent / "configs" / "lynx_config.json"
 
 
 def main():
@@ -45,15 +44,28 @@ def main():
 
     deployer = get_user_selected_account()
 
+    config = DeploymentConfig.from_file(CONFIG_FILE)
+    config_context = {}
+
     # Lynx TACo Root Application
-    LynxRootApplication = deployer.deploy(project.LynxRootApplication, publish=PUBLISH)
+    LynxRootApplication = deployer.deploy(
+        project.LynxRootApplication,
+        *config.get_constructor_params(
+            container=project.LynxRootApplication, context=config_context
+        ),
+        publish=PUBLISH,
+    )
+    config_context[LynxRootApplication.contract_type.name] = LynxRootApplication
 
     # Lynx TACo Child Application
     LynxTACoChildApplication = deployer.deploy(
         project.LynxTACoChildApplication,
-        LynxRootApplication.address,
+        *config.get_constructor_params(
+            container=project.LynxTACoChildApplication, context=config_context
+        ),
         publish=PUBLISH,
     )
+    config_context[LynxTACoChildApplication.contract_type.name] = LynxTACoChildApplication
 
     LynxRootApplication.setChildApplication(
         LynxTACoChildApplication.address,
@@ -63,25 +75,24 @@ def main():
 
     # Lynx Ritual Token
     LynxRitualToken = deployer.deploy(
-        project.LynxRitualToken, Web3.to_wei(10_000_000, "ether"), publish=PUBLISH
+        project.LynxRitualToken,
+        *config.get_constructor_params(container=project.LynxRitualToken, context=config_context),
+        publish=PUBLISH,
     )
+    config_context[LynxRitualToken.contract_type.name] = LynxRitualToken
 
     # Lynx Coordinator
     Coordinator = deployer.deploy(
-        project.Coordinator,  # coordinator
-        LynxTACoChildApplication.address,  # root_app
-        3600,  # timeout (seconds)
-        4,  # max_dkg_size
-        deployer.address,  # admin
-        LynxRitualToken.address,  # currency
-        1,  # fee_rate (wei per second)
+        project.Coordinator,
+        *config.get_constructor_params(container=project.Coordinator, context=config_context),
         publish=PUBLISH,
     )
+    config_context[Coordinator.contract_type.name] = Coordinator
 
     LynxTACoChildApplication.setCoordinator(Coordinator.address, sender=deployer)
 
     # list deployments
-    deployments = [LynxRootApplication, LynxTACoChildApplication, LynxRitualToken, Coordinator]
+    deployments = list(config_context.values())
 
     registry_from_ape_deployments(
         deployments=deployments, output_filepath=DEPLOYMENT_REGISTRY_FILEPATH
