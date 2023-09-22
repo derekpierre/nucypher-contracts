@@ -8,14 +8,9 @@ from ape import project
 from ape.api import AccountAPI
 from ape.cli import get_user_selected_account
 from ape.contracts.base import ContractContainer
-from web3.auto.gethdev import w3
-
 from scripts.constants import NULL_ADDRESS
-from scripts.utils import (
-    check_etherscan_plugin,
-    check_registry_filepath,
-    check_infura_plugin
-)
+from scripts.utils import check_etherscan_plugin, check_infura_plugin, check_registry_filepath
+from web3.auto.gethdev import w3
 
 VARIABLE_PREFIX = "$"
 
@@ -54,8 +49,8 @@ def _resolve_param(value: Any, context: typing.Dict[str, Any]) -> Any:
     if not _is_variable(value):
         return value  # literally a value
     variable = value.strip(VARIABLE_PREFIX)
-    contract_instance = context[variable]
-    return contract_instance.address
+    variable_object = context[variable]
+    return variable_object.address
 
 
 def _resolve_list(value: List[Any], context: typing.Dict[str, Any]) -> List[Any]:
@@ -80,7 +75,7 @@ def _validate_constructor_param(param: Any, contracts: List[str]) -> None:
     if not _is_variable(param):
         return  # literally a value
     variable = param.strip(VARIABLE_PREFIX)
-    if variable not in contracts:
+    if variable not in contracts and variable != "deployer":
         raise ConstructorParameters.Invalid(f"Variable {param} is not resolvable")
 
 
@@ -117,7 +112,7 @@ def _validate_constructor_abi_inputs(
         if _is_variable(value):
             # at the moment only contract addresses are variables
             # won't know address until deployment; use a placeholder
-            context = defaultdict(PlacehodlerContractInstance)
+            context = defaultdict(AddressablePlacehodler)
             if isinstance(value, list):
                 value_to_validate = _resolve_list(value, context)
             else:
@@ -167,7 +162,9 @@ def _confirm_resolution(resolved_params: OrderedDict, contract_name: str) -> Non
     _confirm_deployment(contract_name)
 
 
-class PlacehodlerContractInstance(typing.NamedTuple):
+class AddressablePlacehodler(typing.NamedTuple):
+    """Placeholder object that has an address attribute."""
+
     address: str = NULL_ADDRESS
 
 
@@ -209,6 +206,8 @@ class ApeDeploymentParameters:
         """Resolves the deployment parameters for a single contract."""
         contract_name = container.contract_type.name
         resolved_constructor_params = self.constructor_parameters.resolve(contract_name, context)
+        if "$deployer" in self.constructor_parameters.parameters[contract_name].values():
+            print(f"(!) $deployer parameter resolved to {context['deployer']}")
         _confirm_resolution(resolved_constructor_params, contract_name)
         deployment_params = [container, *resolved_constructor_params.values()]
         return deployment_params
