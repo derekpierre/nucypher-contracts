@@ -128,6 +128,40 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
             childApplication.updateOperator(_stakingProvider, _operator);
         }
     }
+
+    function minimumAuthorization() external view returns (uint96) {
+        return 40000000000000000000000; // 40k T
+    }
+
+    //
+    // Remaining IApplication functions
+    //
+
+    // solhint-disable-next-line no-empty-blocks
+    function withdrawRewards(address stakingProvider) external {}
+
+    function authorizationIncreased(
+        address stakingProvider,
+        uint96 fromAmount,
+        uint96 toAmount // solhint-disable-next-line no-empty-blocks
+    ) external {}
+
+    function authorizationDecreaseRequested(
+        address stakingProvider,
+        uint96 fromAmount,
+        uint96 toAmount // solhint-disable-next-line no-empty-blocks
+    ) external {}
+
+    function involuntaryAuthorizationDecrease(
+        address stakingProvider,
+        uint96 fromAmount,
+        uint96 toAmount // solhint-disable-next-line no-empty-blocks
+    ) external {}
+
+    // solhint-disable-next-line no-unused-vars
+    function availableRewards(address stakingProvider) external view returns (uint96) {
+        return 0;
+    }
 }
 
 contract LynxTACoChildApplication is TACoChildApplication, Ownable {
