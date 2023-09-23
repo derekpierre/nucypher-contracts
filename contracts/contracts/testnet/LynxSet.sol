@@ -18,6 +18,7 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
     }
 
     uint96 public immutable minimumAuthorization = 40000000000000000000000;
+    uint256 public immutable minOperatorSeconds = 3600;
     ITACoRootToChild public childApplication;
     mapping(address => StakingProviderInfo) public stakingProviderInfo;
     address[] public stakingProviders;
