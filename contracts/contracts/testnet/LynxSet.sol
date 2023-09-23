@@ -138,10 +138,27 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
     function withdrawRewards(address stakingProvider) external {}
 
     function authorizationIncreased(
-        address stakingProvider,
-        uint96 fromAmount,
-        uint96 toAmount // solhint-disable-next-line no-empty-blocks
-    ) external {}
+        address _stakingProvider,
+        // solhint-disable-next-line no-unused-vars
+        uint96 _fromAmount,
+        uint96 _toAmount
+    ) external {
+        require(
+            _stakingProvider != address(0) && _toAmount > 0,
+            "Input parameters must be specified"
+        );
+        require(_toAmount >= minimumAuthorization, "Authorization must be greater than minimum");
+
+        StakingProviderInfo storage info = stakingProviderInfo[_stakingProvider];
+        require(
+            _stakingProviderFromOperator[_stakingProvider] == address(0) ||
+                _stakingProviderFromOperator[_stakingProvider] == _stakingProvider,
+            "A provider can't be an operator for another provider"
+        );
+
+        info.authorized = _toAmount;
+        childApplication.updateAuthorization(_stakingProvider, _toAmount);
+    }
 
     function authorizationDecreaseRequested(
         address stakingProvider,
