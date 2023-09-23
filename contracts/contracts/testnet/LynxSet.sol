@@ -17,6 +17,7 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
         uint96 authorized;
     }
 
+    uint96 public immutable minimumAuthorization = 40000000000000000000000;
     ITACoRootToChild public childApplication;
     mapping(address => StakingProviderInfo) public stakingProviderInfo;
     address[] public stakingProviders;
@@ -127,10 +128,6 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
         if (address(childApplication) != address(0)) {
             childApplication.updateOperator(_stakingProvider, _operator);
         }
-    }
-
-    function minimumAuthorization() external view returns (uint96) {
-        return 40000000000000000000000; // 40k T
     }
 
     //
