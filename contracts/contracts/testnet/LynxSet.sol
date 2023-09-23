@@ -90,6 +90,10 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
         return stakingProviderInfo[_stakingProvider].authorized > 0;
     }
 
+    function authorizedStake(address _stakingProvider) public view returns (uint96) {
+        return stakingProviderInfo[_stakingProvider].authorized;
+    }
+
     function isOperatorConfirmed(address _operator) public view returns (bool) {
         address stakingProvider = _stakingProviderFromOperator[_operator];
         StakingProviderInfo storage info = stakingProviderInfo[stakingProvider];
