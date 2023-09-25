@@ -191,23 +191,31 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
     }
 }
 
-contract LynxMockRootApplication is Ownable, ITACoChildToRoot {
+contract LynxMockRootApplication is Ownable, ITACoChildToRoot, ITACoRootToChild {
     ITACoRootToChild public childApplication;
+    ITACoChildToRoot public rootApplication;
+
+    function setRootApplication(ITACoChildToRoot _rootApplication) external onlyOwner {
+        rootApplication = _rootApplication;
+    }
 
     function setChildApplication(ITACoRootToChild _childApplication) external onlyOwner {
         childApplication = _childApplication;
     }
 
-    function updateOperator(address _stakingProvider, address _operator) external onlyOwner {
+    function updateOperator(address _stakingProvider, address _operator) external override {
         childApplication.updateOperator(_stakingProvider, _operator);
     }
 
-    function updateAuthorization(address _stakingProvider, uint96 _amount) external onlyOwner {
+    function updateAuthorization(address _stakingProvider, uint96 _amount) external override {
         childApplication.updateAuthorization(_stakingProvider, _amount);
     }
 
-    // solhint-disable-next-line no-empty-blocks
-    function confirmOperatorAddress(address _operator) external override {}
+    function confirmOperatorAddress(address _operator) external override {
+        if (address(rootApplication) != address(0)) {
+            rootApplication.confirmOperatorAddress(_operator);
+        }
+    }
 }
 
 contract LynxTACoChildApplication is TACoChildApplication, Ownable {
