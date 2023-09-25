@@ -191,7 +191,21 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
     }
 }
 
-contract LynxMockRoot is Ownable, ITACoChildToRoot {
+contract LynxMockRootApplication is Ownable, ITACoChildToRoot {
+    ITACoRootToChild public childApplication;
+
+    function setChildApplication(ITACoRootToChild _childApplication) external onlyOwner {
+        childApplication = _childApplication;
+    }
+
+    function updateOperator(address _stakingProvider, address _operator) external onlyOwner {
+        childApplication.updateOperator(_stakingProvider, _operator);
+    }
+
+    function updateAuthorization(address _stakingProvider, uint96 _amount) external onlyOwner {
+        childApplication.updateAuthorization(_stakingProvider, _amount);
+    }
+
     // solhint-disable-next-line no-empty-blocks
     function confirmOperatorAddress(address _operator) external override {}
 }
