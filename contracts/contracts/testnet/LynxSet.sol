@@ -106,7 +106,7 @@ contract LynxRootApplication is Ownable, ITACoChildToRoot {
         return stakingProviders.length;
     }
 
-    function bondOperator(address _stakingProvider, address _operator) external onlyOwner {
+    function bondOperator(address _stakingProvider, address _operator) external {
         StakingProviderInfo storage info = stakingProviderInfo[_stakingProvider];
         address previousOperator = info.operator;
         require(
