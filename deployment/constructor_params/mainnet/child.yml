@@ -1,0 +1,47 @@
+deployment:
+  name: mainnet-child
+  chain_id: 137  # Polygon Mainnet
+
+artifacts:
+  dir: ./deployment/artifacts/
+  filename: mainnet.json
+
+constants:
+  # DAI Token on Polygon PoS - References:
+  # - https://polygonscan.com/token/0x8f3cf7ad23cd3cadbd9735aff958023239c6a063
+  # - https://github.com/search?q=0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063&type=code
+  DAI_ON_POLYGON: 0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063
+
+  # TACO specific constants:
+  PRIVATE_BETA_FEE_RATE: 4050925925925  # $0.35 per day, expressed in DAI units per seconds (in Python: 35*10**16 // 86400)
+
+  # Threshold Network - References:
+  # - https://docs.threshold.network/resources/contract-addresses/mainnet/threshold-dao
+  TREASURY_GUILD_ON_POLYGON: 0xc3Bf49eBA094AF346830dF4dbB42a07dE378EeB6
+  THRESHOLD_COUNCIL_ON_POLYGON: 0x9F6e831c8F8939DC0C830C6e492e7cEf4f9C2F5f
+
+  # FxPortal addresses - References:
+  # - https://github.com/0xPolygon/fx-portal#deployment-addresses
+  # - https://github.com/0xPolygon/fx-portal/blob/main/config/config.json
+  # - https://wiki.polygon.technology/docs/pos/design/bridge/l1-l2-communication/state-transfer/#prerequisites
+  FXPORTAL_FXCHILD: 0x8397259c983751DAf40400790063935a11afa28a
+
+contracts:
+  - PolygonChild:
+      _fxChild: $FXPORTAL_FXCHILD
+  - TACoChildApplication:
+      _rootApplication: $PolygonChild
+  - TransparentUpgradeableProxy:
+      _logic: TACoChildApplication
+      initialOwner: $deployer
+      _data: 0x
+  - Coordinator:
+      _application: $TransparentUpgradeableProxy:TACoChildApplication
+      _timeout: 3600
+      _maxDkgSize: 32
+      _admin: $deployer
+      _currency: $DAI_ON_POLYGON
+      _feeRatePerSecond: $PRIVATE_BETA_FEE_RATE
+  - GlobalAllowList:
+      _coordinator: $Coordinator
+      _admin: $deployer
