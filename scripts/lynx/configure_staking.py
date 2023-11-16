@@ -2,6 +2,7 @@
 
 
 from ape import networks, project
+
 from deployment.constants import ARTIFACTS_DIR, LYNX_NODES
 from deployment.params import Transactor
 from deployment.registry import contracts_from_registry
@@ -25,13 +26,13 @@ def configure_goerli_root(transactor: Transactor) -> int:
         min_stake_size = taco_application_contract.minimumAuthorization()
         for staking_provider, operator in LYNX_NODES.items():
             # staking
-            transactor.transact(
-                threshold_staking_contract.setRoles,
-                staking_provider,
-                transactor.get_account().address,
-                staking_provider,
-                staking_provider,
-            )
+            # transactor.transact(
+            #    threshold_staking_contract.setRoles,
+            #    staking_provider,
+            #    transactor.get_account().address,
+            #    staking_provider,
+            #    staking_provider,
+            # )
 
             transactor.transact(
                 threshold_staking_contract.authorizationIncreased,
