@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from ape import project
+
 from deployment.constants import CONSTRUCTOR_PARAMS_DIR
 from deployment.params import Deployer
 
@@ -23,9 +24,11 @@ def main():
 
     deployer = Deployer.from_yaml(filepath=CONSTRUCTOR_PARAMS_FILEPATH, verify=VERIFY)
 
-    reward_token = deployer.deploy(project.LynxStakingToken)
+    # reward_token = deployer.deploy(project.LynxStakingToken)
 
-    mock_threshold_staking = deployer.deploy(project.TestnetThresholdStaking)
+    mock_threshold_staking = project.TestnetThresholdStaking.at(
+        "0xcdD63981c8f4a2A684d102f7d7693A1c326CDd33"
+    )  # deployer.deploy(project.TestnetThresholdStaking)
 
     taco_application = deployer.deploy(project.TACoApplication)
 
@@ -35,8 +38,8 @@ def main():
     deployer.transact(taco_application.setChildApplication, mock_polygon_root.address)
 
     deployments = [
-        reward_token,
-        mock_threshold_staking,
+        # reward_token,
+        # mock_threshold_staking,
         taco_application,
         mock_polygon_root,
     ]
