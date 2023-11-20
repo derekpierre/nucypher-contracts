@@ -9,6 +9,10 @@ from ape.api import AccountAPI, ReceiptAPI
 from ape.cli import get_user_selected_account
 from ape.contracts.base import ContractContainer, ContractInstance, ContractTransactionHandler
 from ape.utils import ZERO_ADDRESS
+from eth_typing import ChecksumAddress
+from ethpm_types import MethodABI
+from web3.auto import w3
+
 from deployment.confirm import _confirm_resolution, _continue
 from deployment.constants import OZ_DEPENDENCY
 from deployment.registry import registry_from_ape_deployments
@@ -19,9 +23,6 @@ from deployment.utils import (
     validate_config,
     verify_contracts,
 )
-from eth_typing import ChecksumAddress
-from ethpm_types import MethodABI
-from web3.auto import w3
 
 CONTRACT_CONSTRUCTOR_PARAMETER_KEY = "constructor"
 CONTRACT_PROXY_PARAMETER_KEY = "proxy"
@@ -524,6 +525,7 @@ class Deployer(Transactor):
         check_plugins()
         self.path = path
         self.config = config
+        self.constants = self.config.get("constants") or dict()
         self.registry_filepath = validate_config(config=self.config)
         self.constructor_parameters = ConstructorParameters.from_config(self.config)
         self.proxy_parameters = ProxyParameters.from_config(self.config)
