@@ -1,10 +1,10 @@
 deployment:
   name: mainnet-root
-  chain_id: 1  # Ethereum Mainnet
+  chain_id: 1 # Ethereum Mainnet
 
 artifacts:
-    dir: ./deployment/artifacts/
-    filename: mainnet.json
+  dir: ./deployment/artifacts/
+  filename: mainnet.json
 
 constants:
   # Threshold Network - References:
@@ -19,20 +19,30 @@ constants:
   FXPORTAL_CHECKPOINT_MANAGER: 0x86e4dc95c7fbdbf52e33d563bbdb00823894c287
   FXPORTAL_FXROOT: 0xfe5e5D361b2ad62c541bAb87C45a0B9B018389a2
 
+  # Minimum Stake Size for Threshold
+  FORTY_THOUSAND_TOKENS_IN_WEI_UNITS: 40000000000000000000000
+
+  IN_SECONDS_1_HOUR: 3600
+  IN_SECONDS_7_DAYS: 604800
+  IN_SECONDS_60_DAYS: 5184000
+  IN_SECONDS_182_DAYS: 15724800
+  IN_SECONDS_364_DAYS: 31449600
+
 contracts:
   - TACoApplication:
-      _token: $T_TOKEN_ETH_MAINNET
-      _tStaking: $T_STAKING_CONTRACT
-      _minimumAuthorization: 40000000000000000000000
-      _minOperatorSeconds: 3600
-      _rewardDuration: 604800
-      _deauthorizationDuration: 5184000
-      _commitmentDurationOptions: [15724800, 31449600]
-  - TransparentUpgradeableProxy:
-      _logic: $TACoApplication
-      initialOwner: $deployer
-      _data: 0x
+      proxy:
+        constructor:
+          _data: $encode:initialize
+      constructor:
+        _token: $T_TOKEN_ETH_MAINNET
+        _tStaking: $T_STAKING_CONTRACT
+        _minimumAuthorization: $FORTY_THOUSAND_TOKENS_IN_WEI_UNITS
+        _minOperatorSeconds: $IN_SECONDS_1_HOUR
+        _rewardDuration: $IN_SECONDS_7_DAYS
+        _deauthorizationDuration: $IN_SECONDS_60_DAYS
+        _commitmentDurationOptions: [$IN_SECONDS_182_DAYS, $IN_SECONDS_364_DAYS]
   - PolygonRoot:
-      _checkpointManager: $FXPORTAL_CHECKPOINT_MANAGER
-      _fxRoot: $FXPORTAL_FXROOT
-      _rootApplication: $TransparentUpgradeableProxy:TACoApplication
+      constructor:
+        _checkpointManager: $FXPORTAL_CHECKPOINT_MANAGER
+        _fxRoot: $FXPORTAL_FXROOT
+        _rootApplication: $TACoApplication
