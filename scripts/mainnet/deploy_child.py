@@ -5,7 +5,7 @@ from ape import project
 from deployment.constants import CONSTRUCTOR_PARAMS_DIR
 from deployment.params import Deployer
 
-VERIFY = False  # FIXMEEEEEEE
+VERIFY = False  # TODO: switch to True for mainnet deployment?
 CONSTRUCTOR_PARAMS_FILEPATH = CONSTRUCTOR_PARAMS_DIR / "mainnet" / "child.yml"
 
 # Threshold Network - References:
@@ -34,7 +34,11 @@ def main():
     # Grant INITIATOR_ROLE to Integrations Guild and BetaProgramInitiator
     INITIATOR_ROLE = coordinator.INITIATOR_ROLE()
     deployer.transact(coordinator.grantRole, INITIATOR_ROLE, TREASURY_GUILD_ON_POLYGON)
+
     # Change Coordinator admin to Council on Polygon
+    # TODO: David is that what you intended by the above comment?
+    #  Not sure the length of the default delay in transferring admin role
+    deployer.transact(coordinator.beginDefaultAdminTransfer, TREASURY_GUILD_ON_POLYGON)
 
     global_allow_list = deployer.deploy(project.GlobalAllowList)
 
