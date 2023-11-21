@@ -1,6 +1,6 @@
 deployment:
   name: mainnet-child
-  chain_id: 1337 #137  # Polygon Mainnet
+  chain_id: 137 # Polygon Mainnet
 
 artifacts:
   dir: ./deployment/artifacts/
