@@ -472,6 +472,15 @@ contract Coordinator is Initializable, AccessControlDefaultAdminRulesUpgradeable
         return addresses;
     }
 
+    function isProviderParticipating(uint32 ritualId, address provider) external view returns (bool) {
+        Ritual storage ritual = rituals[ritualId];
+        try getParticipantFromProvider(ritual, provider) {
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     function isEncryptionAuthorized(
         uint32 ritualId,
         bytes memory evidence,
