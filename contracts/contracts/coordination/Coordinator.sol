@@ -446,12 +446,18 @@ contract Coordinator is Initializable, AccessControlDefaultAdminRulesUpgradeable
         return getParticipantFromProvider(rituals[ritualId], provider);
     }
 
-    function getParticipants(uint32 ritualId) external view returns (Participant[] memory) {
+    function getParticipants(
+        uint32 ritualId
+    ) external view returns (Participant[] memory) {
         Ritual storage ritual = rituals[ritualId];
         return ritual.participant;
     }
 
-    function getParticipants(uint32 ritualId, uint256 start, uint256 end) external view returns (Participant[] memory) {
+    function getParticipants(
+        uint32 ritualId,
+        uint256 start,
+        uint256 end
+    ) external view returns (Participant[] memory) {
         Ritual storage ritual = rituals[ritualId];
         require(start < ritual.participant.length, "Start index out of bounds");
         require(end <= ritual.participant.length, "End index out of bounds");
@@ -472,7 +478,10 @@ contract Coordinator is Initializable, AccessControlDefaultAdminRulesUpgradeable
         return addresses;
     }
 
-    function isProviderParticipating(uint32 ritualId, address provider) external view returns (bool) {
+    function isProviderParticipating(
+        uint32 ritualId,
+        address provider
+    ) external view returns (bool) {
         Ritual storage ritual = rituals[ritualId];
         try getParticipantFromProvider(ritual, provider) {
             return true;
