@@ -452,15 +452,24 @@ contract Coordinator is Initializable, AccessControlDefaultAdminRulesUpgradeable
     function getParticipant(
         uint32 ritualId,
         address provider,
-        bool transcripts
-    ) external view returns (Participant memory, uint256) {
+        bool transcript
+    ) public view returns (Participant memory, uint256) {
         Ritual storage ritual = rituals[ritualId];
-        (bool found, uint256 index, Participant memory participant) = _getParticipant(ritual, provider);
+        (bool found, uint256 index, Participant memory participant) = findParticipant(ritual, provider);
         require(found, "Participant not found");
-        if (!transcripts) {
+        if (!transcript) {
             participant.transcript = '';
         }
         return (participant, index);
+    }
+
+    function getProviders(uint32 ritualId) external view returns (address[] memory) {
+        Ritual storage ritual = rituals[ritualId];
+        address[] memory providers = new address[](ritual.participant.length);
+        for (uint256 i = 0; i < ritual.participant.length; i++) {
+            providers[i] = ritual.participant[i].provider;
+        }
+        return providers;
     }
 
     function isParticipant(uint32 ritualId, address provider) external view returns (bool, uint256) {
